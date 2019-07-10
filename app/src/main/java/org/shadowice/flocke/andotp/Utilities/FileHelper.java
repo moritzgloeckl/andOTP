@@ -41,15 +41,11 @@ public class FileHelper {
     public static String readFileToString(Context context, Uri file) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        try {
-            InputStream inputStream = context.getContentResolver().openInputStream(file);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        try (InputStream inputStream = context.getContentResolver().openInputStream(file); BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line).append("\n");
             }
-            reader.close();
-            inputStream.close();
         } catch (Exception error) {
             error.printStackTrace();
         }
@@ -60,12 +56,8 @@ public class FileHelper {
     public static boolean writeStringToFile(Context context, Uri file, String content) {
         boolean success = true;
 
-        try {
-            OutputStream outputStream = context.getContentResolver().openOutputStream(file);
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        try (OutputStream outputStream = context.getContentResolver().openOutputStream(file); BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
             writer.write(content);
-            writer.close();
-            outputStream.close();
         } catch (Exception error) {
             success = false;
             error.printStackTrace();
@@ -75,50 +67,45 @@ public class FileHelper {
     }
 
     public static byte[] readFileToBytes(File file) throws IOException {
-        final InputStream in = new FileInputStream(file);
-        try {
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try (InputStream in = new FileInputStream(file); ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
             byte[] buffer = new byte[1024];
             int count;
             while ((count = in.read(buffer)) != -1) {
                 bytes.write(buffer, 0, count);
             }
             return bytes.toByteArray();
-        } finally {
-            in.close();
+        } catch (Exception error) {
+            error.printStackTrace();
         }
+        return null;
     }
 
     public static void writeBytesToFile(File file, byte[] data) throws IOException {
-        final OutputStream out = new FileOutputStream(file);
-        try {
+        try (OutputStream out = new FileOutputStream(file)) {
             out.write(data);
-        } finally {
-            out.close();
+        } catch (IOException error) {
+            error.printStackTrace();
         }
     }
 
     public static byte[] readFileToBytes(Context context, Uri file) throws IOException {
-        final InputStream in = context.getContentResolver().openInputStream(file);
-        try {
-            ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        try (InputStream in = context.getContentResolver().openInputStream(file); ByteArrayOutputStream bytes = new ByteArrayOutputStream()) {
             byte[] buffer = new byte[1024];
             int count;
             while ((count = in.read(buffer)) != -1) {
                 bytes.write(buffer, 0, count);
             }
             return bytes.toByteArray();
-        } finally {
-            in.close();
+        } catch (Exception error) {
+            error.printStackTrace();
         }
     }
 
     public static void writeBytesToFile(Context context, Uri file, byte[] data) throws IOException {
-        final OutputStream out = context.getContentResolver().openOutputStream(file);
-        try {
+        try (OutputStream out = context.getContentResolver().openOutputStream(file)) {
             out.write(data);
-        } finally {
-            out.close();
+        } catch (IOException error) {
+            error.printStackTrace();
         }
     }
 
